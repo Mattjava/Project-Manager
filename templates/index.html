@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>To-DO List</title>
+</head>
+<body>
+    <div id="title-container">
+        <h1>To-Do!</h1>
+    </div>
+    <div id="add-button-block">
+        <a href="{{ url_for('add') }}"><button id="add-button">Add a Task!</button></a>
+        <a href="{{ url_for('delete') }}"><button id="add-button">Finish a Task!</button></a>
+    </div>
+
+    {% for task in tasks %}
+    <div class="task-containers">
+        <h2>{{ task }}</h2>
+    </div>
+    {% endfor %}
+</body>
+</html>
