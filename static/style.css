@@ -10,3 +10,16 @@ body {
 form {
     background-color: lightgreen;
 }
+
+#empty-container {
+    background-color: lightgrey;
+    border-style: solid;
+}
+
+#title-container {
+    background-color: lightgrey;
+}
+
+.list-group-item {
+    background-color: rgb(236, 255, 236);
+}

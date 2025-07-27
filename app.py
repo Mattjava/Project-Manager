@@ -3,40 +3,34 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
 from sqlalchemy import Table, Column, MetaData, Sequence, Identity, String
 from sqlalchemy.sql import text
+from model import db, Task
+from forms import TaskForm
 import os
 
-from wtforms.validators import DataRequired
-
-currentId = 0
 
 meta = MetaData()
 
-
-
+# App Start-up
 app = Flask(__name__)
+
+# Bootstrap Start-Up
 bootstrap = Bootstrap5(app)
 
+# Environment Variables
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 
-db = SQLAlchemy(app)
-
-class Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    task = db.Column(db.String(255))
-
-    def __init__(self, task):
-        self.task = task
-
-class TaskForm(FlaskForm):
-    task = StringField('Task', validators=[DataRequired()])
-    submit = SubmitField('Submit')
+# Database connection
+db.init_app(app)
 
 
+# This URL loads the home page of the website
+# It also grabs all the tasks in the database and displays it to the user.
 @app.route('/')
-def index():  # put application's code here
+def index():
     global currentId, tasks
 
 
@@ -54,10 +48,13 @@ def index():  # put application's code here
     return render_template('index.html', task_dict=tasks_dict)
 
 
+# Loads page to add new tasks
 @app.route('/add')
 def add():
     return render_template('add.html', form=TaskForm())
 
+# This URL handles POST request with new tasks
+# The function connected saves new data into the Postresql database and redirects the user to the home page
 @app.route('/postadd', methods=['POST'])
 def postadd():
 
@@ -72,6 +69,8 @@ def postadd():
             db.session.commit()
     return redirect('/')
 
+# This route handles POST request to delete a post.
+# It deletes a submission from the database and redirects the user to the home page
 @app.route('/postdelete/<int:id>', methods=['GET', 'POST'])
 def postdelete(id):
     db.session.execute(text('DELETE FROM task WHERE id=:oldid'), {"oldid": id})
