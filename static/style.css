@@ -3,39 +3,10 @@ html {
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
 
-#title-container {
-    outline-width: 1%;
-    outline-style: solid;
-    border-radius: 10px;
-    align-content: center;
-    text-align: center;
-    background-color:azure
+body {
+    background-color: lightgreen;
 }
 
-#add-button-block {
-    display:flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 25px;
-    margin-bottom: 25px;
-}
-
-#add-button {
-    font-style: italic;
-    background-color: white;
-    height: 30px;
-}
-
-button {
-    margin-left: 10px;
-}
-
-#task {
-    width:100%;
-}
-
-.task-containers {
-    background-color: white;
-    border-width: 1px;
-    border-style: solid;
+form {
+    background-color: lightgreen;
 }
