@@ -4,10 +4,12 @@ from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+from werkzeug.utils import secure_filename
 from sqlalchemy import Table, Column, MetaData, Sequence, Identity, String
 from sqlalchemy.sql import text
 from model import db, Task, Project
-from forms import TaskForm, ProjectForm
+from forms import TaskForm, ProjectForm, FileForm
+from file import process_file, allowed_file, DOWNLOAD_FOLDER
 import os
 
 
@@ -22,6 +24,7 @@ bootstrap = Bootstrap5(app)
 # Environment Variables
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
+app.config['UPLOAD_FOLDER'] = DOWNLOAD_FOLDER
 
 # Database connection
 db.init_app(app)
@@ -72,12 +75,12 @@ def project(id):
 # Loads page to add new tasks
 @app.route('/addproject')
 def addproject():
-    return render_template('add.html', form=ProjectForm(), create_task=False)
+    return render_template('add.html', form=ProjectForm(), project_page=False)
 
 @app.route('/addtask/<int:id>', methods=['GET', 'POST'])
 def addtask(id):
     current_project = db.session.query(Project).get(id)
-    return render_template('add.html', form=TaskForm(), create_task=True, project=current_project)
+    return render_template('add.html', form=TaskForm(), project_page=True, project=current_project)
 
 # This URL handles POST request with new tasks
 # The function connected saves new data into the Postresql database and redirects the user to the home page
@@ -105,6 +108,16 @@ def postproject():
             db.session.add(new_project)
             db.session.commit()
     return redirect('/')
+
+@app.route('/file/<int:id>', methods=['GET', 'POST'])
+def file(id):
+    file_form = FileForm()
+    if request.method == 'POST' and file_form.validate_on_submit():
+        filedata = file_form.file.data
+        filename = secure_filename(filedata.filename)
+        process_file(filename, filedata, id)
+        return redirect(f'/project/{id}')
+    return render_template("file.html", project_page=True, project=Project.query.get(id), form=file_form)
 
 @app.route('/deleteproject/<int:id>')
 def deleteproject(id):

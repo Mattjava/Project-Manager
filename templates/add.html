@@ -6,11 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <title>Add a Task!</title>
+    <title>
+        {% if project_page %}
+        Add a Task!
+        {% else %}
+        Add a Project!
+        {% endif %}
+    </title>
 </head>
+
 <body>
     {% include "header.html" %}
-    {% if create_task %}
+    {% if project_page %}
     <div id="title-container" class="text-md-center"><h1 class="display-4 text-body-emphasis">Create a New Task!</h1></div>
         <form action="{{ url_for('posttask', project_id=project['project_id']) }}" method="POST">
         {{ render_form(form) }}

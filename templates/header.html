@@ -11,6 +11,14 @@
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('addproject') }}">Create Project</a>
         </li>
+          {% if project_page %}
+          <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('addtask', id=project['project_id']) }}">Add Task</a>
+            </li>
+              <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('file', id=project['project_id']) }}">Import File</a>
+            </li>
+          {% endif %}
       </ul>
     </div>
   </div>

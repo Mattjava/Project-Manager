@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed, FileField
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+
 
 # This class is used to set up the form to take in new tasks
 class TaskForm(FlaskForm):
@@ -9,4 +11,8 @@ class TaskForm(FlaskForm):
 
 class ProjectForm(FlaskForm):
     name = StringField('Project Name', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+class FileForm(FlaskForm):
+    file = FileField('Project File', validators=[FileAllowed(['txt', 'csv'])])
     submit = SubmitField('Submit')
