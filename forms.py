@@ -6,3 +6,7 @@ from wtforms.validators import DataRequired
 class TaskForm(FlaskForm):
     task = StringField('Task', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+class ProjectForm(FlaskForm):
+    name = StringField('Project Name', validators=[DataRequired()])
+    submit = SubmitField('Submit')

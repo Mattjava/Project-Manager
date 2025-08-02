@@ -6,8 +6,8 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from sqlalchemy import Table, Column, MetaData, Sequence, Identity, String
 from sqlalchemy.sql import text
-from model import db, Task
-from forms import TaskForm
+from model import db, Task, Project
+from forms import TaskForm, ProjectForm
 import os
 
 
@@ -26,58 +26,105 @@ app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 # Database connection
 db.init_app(app)
 
+current_project_id = 0
+
 
 # This URL loads the home page of the website
 # It also grabs all the tasks in the database and displays it to the user.
 @app.route('/')
 def index():
-    global currentId, tasks
+    global current_project_id
 
 
-    tasks = db.session.execute(text('SELECT task FROM task')).fetchall()
+    projects = db.session.execute(text('SELECT name FROM project')).fetchall()
 
-    allIds = db.session.execute(text('SELECT id FROM task')).fetchall()
+    allIds = db.session.execute(text('SELECT project_id FROM project')).fetchall()
+
+    current_project_id = len(allIds)
+
+    projects_dict = []
+    for i in range(len(projects)):
+        project_dict = {}
+        project_dict['id'] = allIds[i][0]
+        project_dict['name'] = projects[i][0]
+        projects_dict.append(project_dict)
+
+    return render_template('index.html', task_dict=projects_dict, project_page=False)
+
+@app.route('/project/<int:id>')
+def project(id):
+    project = Project.query.get_or_404(id)
+
+    tasks = Task.query.filter_by(project_id=id).all()
+    task_names = [task.task for task in tasks]
+
+    allIds = [task.id for task in tasks]
 
     tasks_dict = []
     for i in range(len(tasks)):
         task_dict = {}
-        task_dict['id'] = allIds[i][0]
-        task_dict['task'] = tasks[i][0]
+        task_dict['id'] = allIds[i]
+        task_dict['task'] = task_names[i]
         tasks_dict.append(task_dict)
 
-    return render_template('index.html', task_dict=tasks_dict)
-
+    return render_template('index.html', task_dict=tasks_dict, project_page=True, project=project)
 
 # Loads page to add new tasks
-@app.route('/add')
-def add():
-    return render_template('add.html', form=TaskForm())
+@app.route('/addproject')
+def addproject():
+    return render_template('add.html', form=ProjectForm(), create_task=False)
+
+@app.route('/addtask/<int:id>', methods=['GET', 'POST'])
+def addtask(id):
+    current_project = db.session.query(Project).get(id)
+    return render_template('add.html', form=TaskForm(), create_task=True, project=current_project)
 
 # This URL handles POST request with new tasks
 # The function connected saves new data into the Postresql database and redirects the user to the home page
-@app.route('/postadd', methods=['POST'])
-def postadd():
 
+@app.route('/posttask/<int:project_id>', methods=['POST'])
+def posttask(project_id):
     if request.method == 'POST':
         task = request.form['task']
-        tasks = db.session.execute(text('SELECT task FROM task')).fetchall()
-        if task not in tasks:
-            print("Adding new task")
-
-            new_task = Task(task)
+        all_tasks = db.session.execute(text('select task from task where project_id=id'), {"id": project_id}).fetchall()
+        if task not in all_tasks:
+            new_task = Task(task, project_id)
             db.session.add(new_task)
             db.session.commit()
+        return redirect(f"/project/{project_id}")
+@app.route('/postproject', methods=['POST'])
+def postproject():
+
+    if request.method == 'POST':
+        project = request.form['name']
+        projects = db.session.execute(text('SELECT name FROM project')).fetchall()
+        if project not in projects:
+            print("Adding new project")
+
+            new_project = Project(project)
+            db.session.add(new_project)
+            db.session.commit()
+    return redirect('/')
+
+@app.route('/deleteproject/<int:id>')
+def deleteproject(id):
+    db.session.execute(text('DELETE FROM task WHERE project_id=:id'), {"id": id})
+    db.session.execute(text('DELETE FROM project WHERE project_id=:id'), {"id": id})
+    db.session.commit()
     return redirect('/')
 
 # This route handles POST request to delete a post.
 # It deletes a submission from the database and redirects the user to the home page
-@app.route('/postdelete/<int:id>', methods=['GET', 'POST'])
-def postdelete(id):
+@app.route('/deletetask/<int:id>', methods=['GET', 'POST'])
+def deletetask(id):
+    task = Task.query.get_or_404(id)
+    project = Project.query.get(task.project_id)
+
     db.session.execute(text('DELETE FROM task WHERE id=:oldid'), {"oldid": id})
     db.session.commit()
 
-    return redirect('/')
+    return redirect(f'/project{project.project_id}')
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

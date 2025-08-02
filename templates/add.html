@@ -10,11 +10,17 @@
 </head>
 <body>
     {% include "header.html" %}
+    {% if create_task %}
     <div id="title-container" class="text-md-center"><h1 class="display-4 text-body-emphasis">Create a New Task!</h1></div>
-
-    <form action="{{ url_for('postadd') }}" method="POST">
+        <form action="{{ url_for('posttask', project_id=project['project_id']) }}" method="POST">
         {{ render_form(form) }}
-    </form>
+        </form>
+    {% else %}
+    <div id="title-container" class="text-md-center"><h1 class="display-4 text-body-emphasis">Create a New Project!</h1></div>
+        <form action="{{ url_for('postproject') }}" method="POST">
+        {{ render_form(form) }}
+        </form>
+    {% endif %}
 
 
 </body>

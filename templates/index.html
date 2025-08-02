@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <title>To-DO List</title>
+    {% if project_page %}
+    <title>{{  project['name'] }}</title>
+    {% else %}
+    <title>Project Manager</title>
+    {% endif %}
 </head>
 <body>
 {#    <div id="title-container">#}
@@ -20,14 +24,28 @@
         <ul class="list-group justify-content-center text-center">
             {% for task in task_dict %}
                 <li class="list-group-item">
-                    {{ task['task'] }} <a class="nav-link" href="{{ url_for('postdelete', id=task['id']) }}">X</a>
+                    {% if not project_page  %}
+                    <a href="{{ url_for('project', id=task['id']) }}">{{ task['name'] }}</a>
+                        <a class="nav-link" href="{{ url_for('deleteproject', id=task['id']) }}">X</a>
+                    {% else %}
+                        {{ task['task'] }}
+                        <a class="nav-link" href="{{ url_for('deletetask', id=task['id']) }}">X</a>
+                    {% endif %}
                 </li>
             {% else %}
                 <div id="empty-container">
                     <h2>This list is empty!</h2>
+                    {% if project_page %}
                     <p>You can expand it by adding new tasks!</p>
+                    {% else %}
+                    <p>You can expand it by starting a new project!</p>
+                    {% endif %}
                 </div>
             {% endfor %}
+
+            {% if project_page %}
+                <a href="{{ url_for('addtask', id=project['project_id']) }}">+</a>
+            {% endif %}
         </ul>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
