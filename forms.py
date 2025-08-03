@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField
 from wtforms import StringField, SubmitField
+from wtforms.fields.simple import PasswordField
 from wtforms.validators import DataRequired
 
 
@@ -15,4 +16,9 @@ class ProjectForm(FlaskForm):
 
 class FileForm(FlaskForm):
     file = FileField('Project File', validators=[FileAllowed(['txt', 'csv'])])
+    submit = SubmitField('Submit')
+
+class UserForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Submit')
