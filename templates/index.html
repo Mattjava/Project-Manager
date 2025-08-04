@@ -28,7 +28,12 @@
                     <a href="{{ url_for('project', id=task['id']) }}">{{ task['name'] }}</a>
                         <a class="nav-link" href="{{ url_for('deleteproject', id=task['id']) }}">X</a>
                     {% else %}
-                        {{ task['task'] }}
+                        <p class="task">{{ task['task'] }}</p>
+                        {% if task['due_date'] and not task['due_status'] %}
+                            <p class="due-date">Due: {{ task['due_date'] }}</p>
+                        {% elif task['due_date']  %}
+                            <p class="due-date-late">Due (LATE): {{ task['due_date'] }}</p>
+                        {% endif %}
                         <a class="nav-link" href="{{ url_for('deletetask', id=task['id']) }}">X</a>
                     {% endif %}
                 </li>

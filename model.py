@@ -1,6 +1,7 @@
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Table, Column, String, ForeignKey
+from sqlalchemy import Table, Column, String, ForeignKey, DateTime
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -21,10 +22,12 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     task = db.Column(db.String(255))
     project_id = db.Column(db.Integer, db.ForeignKey('project.project_id'))
+    due_date = db.Column(db.DateTime)
 
-    def __init__(self, task, project_id):
+    def __init__(self, task, project_id, due_date):
         self.task = task
         self.project_id = project_id
+        self.due_date = due_date
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)

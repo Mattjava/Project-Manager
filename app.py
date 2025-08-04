@@ -1,3 +1,5 @@
+from re import split
+
 from flask import Flask, render_template, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap5
@@ -13,6 +15,7 @@ from forms import TaskForm, ProjectForm, FileForm, UserForm
 from file import process_file, allowed_file, DOWNLOAD_FOLDER
 from user import login_manager, load_user, protect_route, verify_user, verify_user_task
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import date
 import os
 
 
@@ -36,6 +39,11 @@ db.init_app(app)
 # Login Manager Set up
 login_manager.init_app(app)
 
+def check_if_late(input_date):
+    if input_date is None:
+        return False
+    current_date = date.today()
+    return input_date < current_date
 
 @app.route('/')
 def home():
@@ -113,11 +121,15 @@ def project(id):
 
     allIds = [task.id for task in tasks]
 
+    due_dates = [task.due_date for task in tasks]
+
     tasks_dict = []
     for i in range(len(tasks)):
         task_dict = {}
         task_dict['id'] = allIds[i]
         task_dict['task'] = task_names[i]
+        task_dict['due_date'] = due_dates[i]
+        task_dict['due_status'] = check_if_late(due_dates[i])
         tasks_dict.append(task_dict)
 
     return render_template('index.html', task_dict=tasks_dict, project_page=True, project=project, user=current_user)
@@ -142,9 +154,12 @@ def addtask(id):
 def posttask(project_id):
     if request.method == 'POST':
         task = request.form['task']
+        due_date = request.form['due_date']
+        if due_date == '':
+            due_date = None
         all_tasks = db.session.execute(text('select task from task where project_id=id'), {"id": project_id}).fetchall()
         if task not in all_tasks:
-            new_task = Task(task, project_id)
+            new_task = Task(task, project_id, due_date)
             db.session.add(new_task)
             db.session.commit()
         return redirect(f"/project/{project_id}")

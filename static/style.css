@@ -23,3 +23,18 @@ form {
 .list-group-item {
     background-color: rgb(236, 255, 236);
 }
+
+.task {
+    font-style: italic;
+    font-size: 20px;
+}
+
+.due-date {
+    font-weight: bold;
+}
+
+.due-date-late {
+    font-weight: bold;
+    color: red;
+    font-style: italic;
+}

@@ -15,7 +15,7 @@ def save_tasks(file_path, project_id):
     tasks = [task[:-1] if "\n" in task else task for task in tasks]
 
     for task in tasks:
-        new_task = Task(task, project_id=project_id)
+        new_task = Task(task, project_id=project_id, due_date=None)
         db.session.add(new_task)
         db.session.commit()
 
