@@ -53,8 +53,8 @@ def home():
     else:
         return redirect('/login')
 
-# This URL loads the home page of the website
-# It also grabs all the tasks in the database and displays it to the user.
+# This URL loads the main page of the website
+# It also grabs all the user's projects in the database and displays it to the user.
 @app.route('/<int:user_id>')
 @protect_route
 def index(user_id):
@@ -76,6 +76,7 @@ def index(user_id):
 
     return render_template('index.html', task_dict=projects_dict, project_page=False, user=current_user)
 
+# This route aims at helping users create new accounts.
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     register_form = UserForm()
@@ -92,6 +93,7 @@ def register():
 
     return render_template("register.html", register_form=register_form, user=register_form)
 
+# This route handles log-in requests and allow users to log into their accounts.
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     login_form = UserForm()
@@ -106,6 +108,7 @@ def login():
 
     return render_template("login.html", register_form=login_form, project_page=False, user=current_user)
 
+# This route logs user out of their account.
 @app.route('/logout')
 def logout():
     logout_user()
@@ -134,12 +137,13 @@ def project(id):
 
     return render_template('index.html', task_dict=tasks_dict, project_page=True, project=project, user=current_user)
 
-# Loads page to add new tasks
+# Loads the page to add a new project
 @app.route('/addproject')
 @protect_route
 def addproject():
     return render_template('add.html', form=ProjectForm(), project_page=False, user=current_user)
 
+# Loads the page to add a task
 @app.route('/addtask/<int:id>', methods=['GET', 'POST'])
 @protect_route
 def addtask(id):
@@ -147,7 +151,7 @@ def addtask(id):
     return render_template('add.html', form=TaskForm(), project_page=True, project=current_project, user=current_user)
 
 # This URL handles POST request with new tasks
-# The function connected saves new data into the Postresql database and redirects the user to the home page
+# The function connected saves new data into the Postgresql database and redirects the user to the home page
 
 @app.route('/posttask/<int:project_id>', methods=['POST'])
 @protect_route
@@ -163,6 +167,9 @@ def posttask(project_id):
             db.session.add(new_task)
             db.session.commit()
         return redirect(f"/project/{project_id}")
+
+# This URL handles POST request with new projects
+# The function connected saves new data into the Postgresql database and redirects the user to the home page
 @app.route('/postproject', methods=['POST'])
 @protect_route
 def postproject():
@@ -178,6 +185,9 @@ def postproject():
             db.session.commit()
     return redirect('/')
 
+# Loads the page to recieve file uploads
+# It also handles file uploads that are sent.
+# It runs methods stored within forms.py before redirecting the user to /project/<project_id>
 @app.route('/file/<int:id>', methods=['GET', 'POST'])
 @protect_route
 def file(id):
@@ -189,6 +199,7 @@ def file(id):
         return redirect(f'/project/{id}')
     return render_template("file.html", project_page=True, project=Project.query.get(id), form=file_form, user=current_user)
 
+# Deletes a project and its related tasks from the database
 @app.route('/deleteproject/<int:id>')
 @verify_user
 def deleteproject(id):

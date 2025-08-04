@@ -10,15 +10,15 @@ class TaskForm(FlaskForm):
     task = StringField('Task', validators=[DataRequired()])
     due_date = DateField('Due Date')
     submit = SubmitField('Submit')
-
+# This class is used to set up the form to take in new projects
 class ProjectForm(FlaskForm):
     name = StringField('Project Name', validators=[DataRequired()])
     submit = SubmitField('Submit')
-
+# This class is used to set up the form to take in a file upload
 class FileForm(FlaskForm):
     file = FileField('Project File', validators=[FileAllowed(['txt', 'csv'])])
     submit = SubmitField('Submit')
-
+# This class is used to set up the form to sign new users into the system
 class UserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
