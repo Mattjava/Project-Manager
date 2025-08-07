@@ -15,7 +15,7 @@ from forms import TaskForm, ProjectForm, FileForm, UserForm
 from file import process_file, allowed_file, DOWNLOAD_FOLDER
 from user import login_manager, load_user, protect_route, verify_user, verify_user_task
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import date
+from datetime import date, datetime
 import os
 
 
@@ -42,8 +42,8 @@ login_manager.init_app(app)
 def check_if_late(input_date):
     if input_date is None:
         return False
-    current_date = date.today()
-    return input_date < current_date
+    current_date = datetime.now()
+    return datetime(year=input_date.year, month=input_date.month, day=input_date.day) < current_date
 
 @app.route('/')
 def home():

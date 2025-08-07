@@ -38,3 +38,7 @@ form {
     color: red;
     font-style: italic;
 }
+
+#username-tab {
+    float: right;
+}
