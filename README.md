@@ -4,7 +4,7 @@ assign tasks and due-dates to the projects, and create due-dates so you can stay
 
 # Technologies
 
-Project Manager is a Python-based web application. The front-end is created primarily through HTML, CSS, and Bootstrap. These technologies allow the website to have a interactive component for the user.\
+Project Manager is a Python-based web application. The front-end is created primarily through HTML, CSS, and Bootstrap. These technologies allow the website to have a interactive component for the user.
 On the back-end side, Project Manager is built using Flask. Flask allows the project to load web pages, process data, and provide web-routes. Additionally, Flask also comes with Werkeug, a library that enables
 Project Manager to perform user authentication and store passwords.\ 
 Finally, a PostgreSQL database stores essential data like user information and their projects and task.
